@@ -8,6 +8,9 @@
       <change afterPath="$PROJECT_DIR$/../python_automator/.idea/python_automator.iml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../python_automator/Extracting_Newspaper.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../python_automator/tedTalk_videodownloader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/products/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,7 +108,7 @@
       <option name="presentableId" value="Default" />
       <updated>1698500103427</updated>
       <workItem from="1698500104490" duration="345000" />
-      <workItem from="1698500639767" duration="7629000" />
+      <workItem from="1698500639767" duration="8198000" />
     </task>
     <servers />
   </component>
