@@ -10,27 +10,34 @@ def index(request):
 
 
 def add_to_cart(request):
-
     if request.method == 'POST':
         product_name = request.POST.get('product_name')
         product_price = request.POST.get('product_price')
         product_img_url = request.POST.get('product_img_url')
+
         if product_name:
             if 'cart' not in request.session:
                 request.session['cart'] = {}
 
-            product_data = {
-                'name': product_name,
-                'price': product_price,
-                'img_url': product_img_url,
+            cart = request.session.get('cart', {})
 
-            }
+            # Verifica se il prodotto è già nel carrello
+            if product_name in cart:
+                # Se sì, aumenta la quantità
+                cart[product_name]['quantity'] += 1
+            else:
+                # Se no, aggiungi il prodotto al carrello
+                product_data = {
+                    'name': product_name,
+                    'price': product_price,
+                    'img_url': product_img_url,
+                    'quantity': 1,  # Inizia con una quantità di 1
+                }
+                cart[product_name] = product_data
 
-            cart_products = request.session.get('cart_products', [])
-            cart_products.append({'product_data': product_data, 'quantity': 1})
-            request.session['cart_products'] = cart_products
-
-        return render(request, 'cart.html', {'cart_products': cart_products})
+            request.session['cart'] = cart
+        return render(request, 'cart.html', {'cart_products': list(cart.values())})
+       # return render(request, 'cart.html', {'cart_products': list(cart.values())})
 
     return HttpResponse("Richiesta non valida")
 
@@ -43,8 +50,9 @@ def remove_from_cart(request):
                 request.session['cart'][product_name] -= 1
                 if request.session['cart'][product_name] <= 0:
                     del request.session['cart'][product_name]
-
-    return redirect('cart_page')
+    cart_products = list(
+        request.session['cart'].values()) if 'cart' in request.session else []
+    return render(request, 'cart.html', {'cart_products': cart_products})
 
 
 def cart_page(request):
