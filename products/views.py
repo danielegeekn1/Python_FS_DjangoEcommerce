@@ -1,7 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import Products
-from django.shortcuts import redirect
 
 
 def index(request):
@@ -23,8 +22,18 @@ def add_to_cart(request):
 
             # Verifica se il prodotto è già nel carrello
             if product_name in cart:
-                # Se sì, aumenta la quantità
-                cart[product_name]['quantity'] += 1
+                if isinstance(cart[product_name], dict):
+                    # Se sì, aumenta la quantità
+                    cart[product_name]['quantity'] += 1
+                else:
+                    # Se `cart[product_name]` non è un dizionario, crea un nuovo dizionario per il prodotto
+                    product_data = {
+                        'name': product_name,
+                        'price': product_price,
+                        'img_url': product_img_url,
+                        'quantity': 1,
+                    }
+                    cart[product_name] = product_data
             else:
                 # Se no, aggiungi il prodotto al carrello
                 product_data = {
@@ -36,10 +45,9 @@ def add_to_cart(request):
                 cart[product_name] = product_data
 
             request.session['cart'] = cart
-        return render(request, 'cart.html', {'cart_products': list(cart.values())})
-       # return render(request, 'cart.html', {'cart_products': list(cart.values())})
+            return render(request, 'cart.html', {'cart_products': list(cart.values())})
 
-    return HttpResponse("Richiesta non valida")
+    return HttpResponse("Not valid request")
 
 
 def remove_from_cart(request):
@@ -47,12 +55,24 @@ def remove_from_cart(request):
         product_name = request.POST.get('product_name')
         if product_name and 'cart' in request.session:
             if product_name in request.session['cart']:
-                request.session['cart'][product_name] -= 1
-                if request.session['cart'][product_name] <= 0:
+                if request.session['cart'][product_name]['quantity'] > 1:
+                    request.session['cart'][product_name]['quantity'] -= 1
+                else:
                     del request.session['cart'][product_name]
-    cart_products = list(
-        request.session['cart'].values()) if 'cart' in request.session else []
-    return render(request, 'cart.html', {'cart_products': cart_products})
+                request.session.save()  # Salva la sessione dopo le modifiche
+
+                # Restituisci una risposta JSON con i dati aggiornati del carrello
+                cart_products = list(
+                    request.session['cart'].values()) if 'cart' in request.session else []
+                response_data = {
+                    'message': f"Prodotto rimosso: {product_name}",
+                    'cart_products': cart_products,
+                }
+                # return JsonResponse(response_data)
+                return render(request, 'cart.html', {'cart_products': cart_products})
+
+    # Se non si verifica un'operazione di rimozione, restituisci una risposta vuota o un messaggio di errore
+    return HttpResponse("Prodouct not removed")
 
 
 def cart_page(request):
